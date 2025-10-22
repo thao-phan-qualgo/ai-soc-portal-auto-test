@@ -1,6 +1,6 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { BasePage } from '../../../src/pages/BasePage';
+import { BasePage } from '../../pages/BasePage';
 
 let page: any;
 let basePage: BasePage;
@@ -8,7 +8,6 @@ let basePage: BasePage;
 Given('the AI SOC Portal is accessible', async function () {
   page = this.page;
   basePage = new BasePage(page);
-  // Navigate to URL and pause for 2 seconds
   await basePage.navigateAndPause('', 2);
   await page.waitForLoadState('networkidle');
 });
@@ -20,12 +19,10 @@ Given('I am using a desktop browser', async function () {
 });
 
 When('I view buttons throughout the application', async function () {
-  // This would check button styling consistency
   console.log('Viewing buttons throughout the application');
 });
 
 Then('all primary buttons should have consistent styling:', async function (dataTable) {
-  // This would verify button styling consistency
   const stylingRules = dataTable.raw();
   console.log('Primary button styling rules:', stylingRules);
 });

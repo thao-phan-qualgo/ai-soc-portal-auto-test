@@ -1,5 +1,5 @@
 import { Given, When, Then } from '@cucumber/cucumber';
-import { BasePage } from '../../../src/pages/BasePage';
+import { BasePage } from '../../pages/BasePage';
 
 let page: any;
 let basePage: BasePage;

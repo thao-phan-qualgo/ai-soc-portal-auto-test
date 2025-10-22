@@ -4,37 +4,37 @@
  */
 
 import { Given, When, Then, After } from '@cucumber/cucumber';
-import { DatabaseUtils, dbManager, DatabaseManager } from '../../../src/database';
+import { DatabaseUtils, dbManager } from '../../utils';
 import { expect } from '@playwright/test';
-import { testDatabaseConfig } from '../../config/database-config';
+
+// Type definitions for better type safety
+interface TestContext {
+  dbConnected?: boolean;
+  lastInsertedId?: number;
+  queryResult?: any[];
+}
+
+interface DataTable {
+  hashes(): Record<string, any>[];
+}
+
+interface Operation {
+  type: string;
+  table: string;
+  data: string;
+  where: string;
+}
 
 // Database connection management
-Given('the database is connected', async function (this: any) {
-  // Create a new database manager instance with tunnel config
-  const tunnelDbManager = new (DatabaseManager as any)();
-  
-  // Override the config for this instance - need to map the config properly
-  (tunnelDbManager as any).config = {
-    host: testDatabaseConfig.database.host,
-    port: testDatabaseConfig.database.port,
-    database: testDatabaseConfig.database.database,
-    user: testDatabaseConfig.database.username, // Note: 'user' not 'username' for pg
-    password: testDatabaseConfig.database.password,
-    connectionTimeoutMillis: testDatabaseConfig.database.connectionTimeout,
-    queryTimeoutMillis: testDatabaseConfig.database.queryTimeout,
-    max: 20,
-    idleTimeoutMillis: 30000,
-  };
-  
-  // Initialize with tunnel config
-  await tunnelDbManager.initialize();
-  const isHealthy = await tunnelDbManager.healthCheck();
+Given('the database is connected', async function (this: TestContext) {
+  // Use the existing database manager with tunnel config
+  await DatabaseUtils.initialize();
+  const isHealthy = await DatabaseUtils.healthCheck();
   expect(isHealthy).toBe(true);
   this.dbConnected = true;
-  this.tunnelDbManager = tunnelDbManager;
 });
 
-Given('the database connection is established', async function (this: any) {
+Given('the database connection is established', async function (this: TestContext) {
   await DatabaseUtils.initialize();
   this.dbConnected = true;
 });
@@ -56,13 +56,13 @@ Then('I should not see a record in the {string} table with {string} = {string}',
 });
 
 // Data creation steps
-When('I create a test record in the {string} table with:', async function (this: any, tableName: string, dataTable: any) {
+When('I create a test record in the {string} table with:', async function (this: TestContext, tableName: string, dataTable: DataTable) {
   const data = dataTable.hashes()[0];
   const result = await DatabaseUtils.insert(tableName, data);
   this.lastInsertedId = result.rows[0]?.id;
 });
 
-When('I insert test data into the {string} table:', async function (tableName: string, dataTable: any) {
+When('I insert test data into the {string} table:', async function (tableName: string, dataTable: DataTable) {
   const dataRows = dataTable.hashes();
   for (const row of dataRows) {
     await DatabaseUtils.insert(tableName, row);
@@ -84,23 +84,21 @@ When('I update the {string} table set {string} = {string} where {string} = {stri
   await DatabaseUtils.update(tableName, updateData, `${whereColumn} = $1`, [whereValue]);
 });
 
-// Database info steps - moved to db-schema.steps.ts to avoid conflicts
-
 // Custom query steps
-When('I execute the SQL query:', async function (this: any, query: string) {
+When('I execute the SQL query:', async function (this: TestContext, query: string) {
   this.queryResult = await DatabaseUtils.rawQuery(query);
 });
 
-Then('the query should return {int} rows', async function (this: any, expectedRowCount: number) {
-  expect(this.queryResult.length).toBe(expectedRowCount);
+Then('the query should return {int} rows', async function (this: TestContext, expectedRowCount: number) {
+  expect(this.queryResult?.length).toBe(expectedRowCount);
 });
 
-Then('the query result should contain:', async function (this: any, dataTable: any) {
+Then('the query result should contain:', async function (this: TestContext, dataTable: DataTable) {
   const expectedData = dataTable.hashes();
-  expect(this.queryResult.length).toBeGreaterThanOrEqual(expectedData.length);
+  expect(this.queryResult?.length).toBeGreaterThanOrEqual(expectedData.length);
   
   for (const expectedRow of expectedData) {
-    const found = this.queryResult.some((actualRow: any) => {
+    const found = this.queryResult?.some((actualRow: Record<string, any>) => {
       return Object.keys(expectedRow).every(key => 
         actualRow[key] === expectedRow[key]
       );
@@ -110,23 +108,24 @@ Then('the query result should contain:', async function (this: any, dataTable: a
 });
 
 // Transaction steps
-When('I execute the following operations in a transaction:', async function (dataTable: any) {
-  const operations = dataTable.hashes();
+When('I execute the following operations in a transaction:', async function (dataTable: DataTable) {
+  const operations = dataTable.hashes() as Operation[];
   
-  await dbManager.transaction(async (client) => {
+  await dbManager.transaction(async (client: any) => {
     for (const operation of operations) {
       const { type, table, data, where } = operation;
       
       switch (type.toLowerCase()) {
-        case 'insert':
+        case 'insert': {
           const insertData = JSON.parse(data);
           await client.query(
             `INSERT INTO ${table} (${Object.keys(insertData).join(', ')}) VALUES (${Object.keys(insertData).map((_, i) => `$${i + 1}`).join(', ')})`,
             Object.values(insertData)
           );
           break;
+        }
           
-        case 'update':
+        case 'update': {
           const updateData = JSON.parse(data);
           const updateColumns = Object.keys(updateData);
           const updateValues = Object.values(updateData);
@@ -136,20 +135,22 @@ When('I execute the following operations in a transaction:', async function (dat
             updateValues
           );
           break;
+        }
           
         case 'delete':
           await client.query(`DELETE FROM ${table} WHERE ${where}`);
           break;
+          
+        default:
+          throw new Error(`Unsupported operation type: ${type}`);
       }
     }
   });
 });
 
 // Cleanup after scenarios
-After(async function (this: any) {
-  if (this.tunnelDbManager) {
-    await this.tunnelDbManager.close();
-  } else if (this.dbConnected) {
+After(async function (this: TestContext) {
+  if (this.dbConnected) {
     await DatabaseUtils.close();
   }
 });

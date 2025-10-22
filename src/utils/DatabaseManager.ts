@@ -4,7 +4,7 @@
  */
 
 import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
-import { config } from '../config/config';
+import { config } from '@config/config';
 
 export interface DatabaseConfig {
   host: string;
@@ -24,7 +24,7 @@ export interface DatabaseConfig {
 export class DatabaseManager {
   private static instance: DatabaseManager;
   private pool: Pool | null = null;
-  private config: DatabaseConfig;
+  private readonly config: DatabaseConfig;
 
   private constructor() {
     this.config = {

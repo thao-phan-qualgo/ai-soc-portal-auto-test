@@ -22,31 +22,17 @@ export default defineConfig({
     ['list'],
     ['allure-playwright', { outputFolder: 'allure-results' }]
   ],
-  
-  /* Shared settings for all the projects below */
+
   use: {
     baseURL: config.portalUrl,
-    
-    /* Collect trace when retrying the failed test */
     trace: 'on-first-retry',
-    
-    /* Screenshot on failure */
     screenshot: 'only-on-failure',
-    
-    /* Video on failure */
     video: 'retain-on-failure',
-    
-    /* Default timeout for each action */
     actionTimeout: config.actionTimeout,
-    
-    /* Default navigation timeout */
     navigationTimeout: config.navigationTimeout,
   },
-  
-  /* Global timeout for each test */
+
   timeout: 60000,
-  
-  /* Global timeout for expect() calls */
   expect: {
     timeout: 10000,
   },

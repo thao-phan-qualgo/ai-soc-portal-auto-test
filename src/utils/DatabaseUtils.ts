@@ -197,6 +197,50 @@ export class DatabaseUtils {
   }> {
     return await dbManager.getDatabaseInfo();
   }
+
+  /**
+   * Get a client from the pool
+   */
+  public static async getClient() {
+    return await dbManager.getClient();
+  }
+
+  /**
+   * Execute a query with parameters
+   */
+  public static async query<T extends QueryResultRow = any>(
+    text: string, 
+    params?: any[]
+  ) {
+    return await dbManager.query<T>(text, params);
+  }
+
+  /**
+   * Execute a transaction
+   */
+  public static async transaction<T>(
+    callback: (client: any) => Promise<T>
+  ): Promise<T> {
+    return await dbManager.transaction(callback);
+  }
+
+  /**
+   * Execute multiple queries in a transaction
+   */
+  public static async executeQueries(queries: Array<{ text: string; params?: any[] }>) {
+    return await dbManager.executeQueries(queries);
+  }
+
+  /**
+   * Get connection pool statistics
+   */
+  public static getPoolStats(): {
+    totalCount: number;
+    idleCount: number;
+    waitingCount: number;
+  } {
+    return dbManager.getPoolStats();
+  }
 }
 
 export default DatabaseUtils;

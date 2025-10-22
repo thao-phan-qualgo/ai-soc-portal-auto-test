@@ -19,14 +19,12 @@
       "@fixtures/*": ["./src/fixtures/*"],
       "@utils/*": ["./src/utils/*"],
       "@config/*": ["./src/config/*"],
-      "@tests/*": ["./tests/*"]
+      "@tests/*": ["./src/tests/*"]
     }
   },
   "include": [
     "src/**/*.ts",
-    "tests/**/*.ts",
-    "playwright.config.ts",
-    "cucumber.config.ts"
+    "playwright.config.ts"
   ],
   "exclude": [
     "node_modules",

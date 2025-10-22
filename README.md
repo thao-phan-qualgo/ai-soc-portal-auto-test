@@ -166,38 +166,104 @@ Configuration is managed through multiple sources (in order of priority):
 
 ## 📝 Writing Tests
 
-### Example Test
+### 🥒 Writing Cucumber/Gherkin Tests
 
+#### Example Feature File
+```gherkin
+Feature: Database Schema Validation
+  @database @schema
+  Scenario: Verify database structure
+    Given the database is connected
+    When I query the database for basic information
+    Then I should see the database version
+    And I should see at least 5 tables in the database
+```
+
+#### Example Step Definition
 ```typescript
-import { test, expect } from './fixtures/page-fixtures';
+import { Given, When, Then } from '@cucumber/cucumber';
+import { DatabaseUtils } from '../../utils';
 
-test.describe('My Test Suite', () => {
-  test('should do something @smoke', async ({ itAssetInventoryPage }) => {
-    // Navigate
-    await itAssetInventoryPage.navigateToITAssetInventory();
-    
-    // Perform actions
-    await itAssetInventoryPage.searchAssets('laptop');
-    
-    // Assertions
-    const isVisible = await itAssetInventoryPage.isAssetTableVisible();
-    expect(isVisible).toBeTruthy();
+Given('the database is connected', async function () {
+  await DatabaseUtils.initialize();
+  const isHealthy = await DatabaseUtils.healthCheck();
+  expect(isHealthy).toBeTruthy();
+});
+```
+
+### 🎭 Writing Playwright Tests
+
+#### Example Test
+```typescript
+import { test, expect } from '@playwright/test';
+
+test.describe('IT Asset Inventory', () => {
+  test('should navigate to asset page @smoke', async ({ page }) => {
+    await page.goto('/it-asset-inventory');
+    await expect(page.locator('h1')).toContainText('IT Asset Inventory');
   });
 });
 ```
 
-### Test Tags
+### 🗄️ Using Database Utilities
+
+#### Available Utility Functions
+```typescript
+import { 
+  query, 
+  select, 
+  insert, 
+  update, 
+  deleteRecord,
+  exists,
+  count,
+  getTableSchema,
+  getTables,
+  healthCheck
+} from '../../utils';
+
+// Execute raw query
+const result = await query('SELECT * FROM users WHERE active = $1', [true]);
+
+// Select with conditions
+const users = await select('users', '*', 'active = $1', [true]);
+
+// Insert new record
+await insert('users', { name: 'John', email: 'john@example.com' });
+
+// Check if record exists
+const userExists = await exists('users', 'email = $1', ['john@example.com']);
+
+// Get table schema
+const schema = await getTableSchema('users');
+```
+
+### 🏷️ Test Tags
 
 Use tags to organize and filter tests:
 
+#### Cucumber Tags
+- `@smoke` - Critical functionality tests
+- `@ui` - UI interaction tests
+- `@database` - Database-related tests
+- `@schema` - Database schema validation
+- `@login` - Authentication tests
+- `@slow` - Long-running tests
+
+#### Playwright Tags
 - `@smoke` - Critical functionality tests
 - `@ui` - UI interaction tests
 - `@regression` - Regression test suite
 - `@performance` - Performance tests
 - `@slow` - Slower running tests
 
-Run tests by tag:
+#### Running Tests by Tag
 ```bash
+# Cucumber
+npx cucumber-js --tags @smoke
+npx cucumber-js --tags "@database and @schema"
+
+# Playwright
 npx playwright test --grep @smoke
 ```
 
@@ -266,24 +332,46 @@ jobs:
 
 ---
 
-## 🎯 Current Sprint: IT Asset Inventory
+## 🎯 Available Test Suites
 
-This sprint focuses on **IT Asset Inventory** functionality only:
+### 🥒 Cucumber/Gherkin Tests
 
-### Available Tests (12 total)
+#### Database Tests
+- **Database Schema Validation** (`@database @schema`)
+  - Schema structure verification
+  - Table and column validation
+  - Foreign key and constraint checks
+  - Index and performance analysis
 
-1. ✅ Navigate to IT Asset Inventory page (smoke)
-2. ✅ Search assets (ui)
-3. ✅ Filter by type (ui)
-4. ✅ Filter by status (ui)
-5. ✅ View asset details (ui)
-6. ✅ Pagination (ui)
-7. ✅ Change page size (ui)
-8. ✅ Export assets (ui)
-9. ✅ Refresh table (ui)
-10. ✅ Sort by column (ui)
-11. ✅ Multiple filters (regression)
-12. ✅ Large dataset handling (performance, slow)
+#### UI Tests
+- **Login Functionality** (`@login`)
+  - User authentication
+  - Login form validation
+  - Session management
+
+- **Overview Page** (`@ui`)
+  - Page navigation
+  - UI element validation
+  - Accessibility checks
+
+- **IT Asset Inventory** (`@ui`)
+  - Asset management interface
+  - Search and filtering
+  - Data display validation
+
+### 🎭 Playwright Tests
+- **Browser Automation** (when implemented)
+  - Cross-browser testing
+  - UI interaction testing
+  - Performance monitoring
+
+### 🏷️ Test Categories
+- `@smoke` - Critical functionality tests
+- `@ui` - User interface tests
+- `@database` - Database-related tests
+- `@schema` - Database schema validation
+- `@login` - Authentication tests
+- `@slow` - Long-running tests
 
 ---
 
@@ -337,21 +425,73 @@ MIT License - see LICENSE file for details
 
 ## 🎉 Quick Start Commands
 
+### 🚀 Get Started in 3 Steps
 ```bash
-# Install everything
+# 1. Install dependencies and browsers
 npm install && npm run install:browsers
+
+# 2. Start database tunnel (for database tests)
+npm run tunnel:start
+
+# 3. Run your first test
+npm run test:gherkin:smoke
+```
+
+### 🎯 Common Test Scenarios
+
+#### Run All Tests
+```bash
+# Run all Playwright tests
+npm test
+
+# Run all Cucumber tests
+npm run test:gherkin
+```
+
+#### Run Specific Test Types
+```bash
+# Run login tests
+npm run test:gherkin:login
+
+# Run database schema tests
+npm run test:gherkin:db:schema
 
 # Run smoke tests with visible browser
 npm run test:smoke -- --headed
+```
 
-# Run all tests in Chrome
-npm run test:chrome
-
+#### Debug and Development
+```bash
 # Debug a specific test
-npm run test:debug tests/it-asset-inventory.spec.ts
+npm run test:debug
 
-# View last test report
+# Generate test code
+npm run codegen
+
+# Test database connection
+npx ts-node scripts/test-db-connection.ts
+```
+
+#### View Results
+```bash
+# View test reports
 npm run report
+npm run allure:open
+```
+
+### 🔧 Troubleshooting Commands
+```bash
+# Check tunnel status
+npm run tunnel:status
+
+# Restart tunnel
+npm run tunnel:restart
+
+# Reinstall browsers
+npm run install:browsers
+
+# Run linting
+npm run lint
 ```
 
 ---

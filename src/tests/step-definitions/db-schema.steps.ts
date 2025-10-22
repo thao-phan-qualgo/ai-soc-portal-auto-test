@@ -4,29 +4,55 @@
  */
 
 import { Given, When, Then, After } from '@cucumber/cucumber';
-import { DatabaseUtils, dbManager } from '../../../src/database';
+import { DatabaseUtils, dbManager } from '../../utils';
 import { expect } from '@playwright/test';
-import { testDatabaseConfig } from '../../config/database-config';
+
+// Type definitions for better type safety
+interface SchemaTestContext {
+  dbInfo?: {
+    version: string;
+    currentDatabase: string;
+    currentUser: string;
+    serverTime: string;
+  };
+  tables?: string[];
+  tableSchema?: Array<{
+    column_name: string;
+    data_type: string;
+    is_nullable: string;
+    column_default: string | null;
+    character_maximum_length: number | null;
+  }>;
+  currentTable?: string;
+  foreignKeys?: Array<{
+    constraint_name: string;
+    table_name: string;
+    column_name: string;
+    foreign_table_name: string;
+    foreign_column_name: string;
+  }>;
+  indexes?: Array<{
+    indexname: string;
+    tablename: string;
+    indexdef: string;
+  }>;
+}
 
 // Database schema inspection steps
-When('I query the database for basic information', async function (this: any) {
-  if (this.tunnelDbManager) {
-    this.dbInfo = await this.tunnelDbManager.getDatabaseInfo();
-  } else {
-    this.dbInfo = await DatabaseUtils.getDatabaseInfo();
-  }
+When('I query the database for basic information', async function (this: SchemaTestContext) {
+  this.dbInfo = await DatabaseUtils.getDatabaseInfo();
 });
 
-When('I query all tables in the public schema', async function (this: any) {
+When('I query all tables in the public schema', async function (this: SchemaTestContext) {
   this.tables = await DatabaseUtils.getTables();
 });
 
-When('I query the structure of table {string}', async function (this: any, tableName: string) {
+When('I query the structure of table {string}', async function (this: SchemaTestContext, tableName: string) {
   this.tableSchema = await DatabaseUtils.getTableSchema(tableName);
   this.currentTable = tableName;
 });
 
-When('I query foreign key relationships', async function (this: any) {
+When('I query foreign key relationships', async function (this: SchemaTestContext) {
   const query = `
     SELECT 
       tc.table_name,
@@ -49,7 +75,7 @@ When('I query foreign key relationships', async function (this: any) {
   this.foreignKeys = await DatabaseUtils.rawQuery(query);
 });
 
-When('I query indexes for core tables', async function (this: any) {
+When('I query indexes for core tables', async function (this: SchemaTestContext) {
   const query = `
     SELECT 
       schemaname,
@@ -266,7 +292,7 @@ Then('I should see table row counts are reasonable', async function (this: any) 
 });
 
 // Cleanup after scenarios
-After(async function (this: any) {
+After(async function (this: SchemaTestContext & { dbConnected?: boolean }) {
   if (this.dbConnected) {
     await DatabaseUtils.close();
   }

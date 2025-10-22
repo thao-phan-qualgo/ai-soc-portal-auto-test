@@ -43,7 +43,7 @@ export interface TestConfig {
 
 class ConfigManager {
   private static instance: ConfigManager;
-  private config: TestConfig;
+  private readonly config: TestConfig;
   
   private constructor() {
     this.config = {

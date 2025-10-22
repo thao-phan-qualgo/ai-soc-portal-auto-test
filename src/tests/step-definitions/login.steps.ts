@@ -1,11 +1,16 @@
 import { Given, When, Then } from '@cucumber/cucumber';
-import { expect } from '@playwright/test';
-import { BasePage } from '../../../src/pages/BasePage';
+import { expect, Page } from '@playwright/test';
+import { BasePage } from '../../pages/BasePage';
 
-let page: any;
+// Type definitions for better type safety
+interface LoginTestContext {
+  page: Page;
+}
+
+let page: Page;
 let basePage: BasePage;
 
-Given('I open the AI SOC Portal', async function () {
+Given('I open the AI SOC Portal', async function (this: LoginTestContext) {
   page = this.page;
   basePage = new BasePage(page);
   console.log('Opening AI SOC Portal...');

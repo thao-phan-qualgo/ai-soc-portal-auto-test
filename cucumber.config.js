@@ -1,19 +1,13 @@
-import { IConfiguration } from '@cucumber/cucumber';
-import dotenv from 'dotenv';
-
-// Load environment variables from .env file
-dotenv.config();
-
 // Use consistent report path
 const reportsPath = process.env.REPORTS_PATH || 'test-results';
 
-const config: IConfiguration = {
+module.exports = {
   default: {
-    paths: ['tests/features/**/*.feature'],
+    paths: ['src/tests/features/**/*.feature'],
     requireModule: ['ts-node/register'],
     require: [
-      'tests/step-definitions/**/*.steps.ts',
-      'tests/config/hooks.ts'
+      'src/tests/step-definitions/**/*.steps.ts',
+      'src/tests/config/hooks.ts'
     ],
     format: [
       'progress-bar',
@@ -33,5 +27,3 @@ const config: IConfiguration = {
     }
   }
 };
-
-export default config;
