@@ -14,19 +14,19 @@
     "declarationMap": true,
     "sourceMap": true,
     "types": ["node", "@playwright/test"],
-    "baseUrl": ".",
     "paths": {
-      "@pages/*": ["src/pages/*"],
-      "@fixtures/*": ["src/fixtures/*"],
-      "@utils/*": ["src/utils/*"],
-      "@config/*": ["src/config/*"],
-      "@tests/*": ["tests/*"]
+      "@pages/*": ["./src/pages/*"],
+      "@fixtures/*": ["./src/fixtures/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@config/*": ["./src/config/*"],
+      "@tests/*": ["./tests/*"]
     }
   },
   "include": [
     "src/**/*.ts",
     "tests/**/*.ts",
-    "playwright.config.ts"
+    "playwright.config.ts",
+    "cucumber.config.ts"
   ],
   "exclude": [
     "node_modules",

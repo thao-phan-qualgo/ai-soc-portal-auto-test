@@ -104,3 +104,21 @@ allure-report/
 design
 testcases
 examples
+src/secret-key/
+
+# SSH Tunnel and Database Tunnel files
+.ssh-tunnel.pid
+*.tunnel.pid
+tunnel-*.log
+ssh-tunnel-*.log
+.ssh-tunnel-*
+tunnel-data/
+ssh-tunnel-data/
+test_database
+*.db
+*.sqlite
+*.sqlite3
+database-*.log
+db-*.log
+
+scripts/*

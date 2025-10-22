@@ -1,5 +1,6 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { config } from '../config/config';
+import { promises } from 'dns';
 
 /**
  * Base Page Object
@@ -42,6 +43,26 @@ export class BasePage {
    */
   async waitForPageLoad(): Promise<void> {
     await this.page.waitForLoadState('domcontentloaded');
+  }
+
+  /**
+   * Delay execution for specified number of seconds
+   * @param seconds - Number of seconds to delay
+   */
+  async delayWithTime(seconds: number): Promise<void> {
+    const milliseconds = seconds * 1000;
+    console.log(`Waiting for ${seconds} seconds...`);
+    await this.page.waitForTimeout(milliseconds);
+  }
+
+  /**
+   * Navigate to URL and pause for specified seconds
+   * @param url - URL to navigate to
+   * @param pauseSeconds - Number of seconds to pause after navigation
+   */
+  async navigateAndPause(url: string, pauseSeconds: number = 2): Promise<void> {
+    await this.navigateTo(url);
+    await this.delayWithTime(pauseSeconds);
   }
   
 }

@@ -8,4 +8,6 @@ Feature: IT Asset Inventory Management
     Given I am logged in to the AI SOC Portal
     And I am on the IT Asset Inventory page
 
-    
+  @smoke
+  Scenario: View IT Asset Inventory Overview
+    When I navigate to the IT Asset Inventory page

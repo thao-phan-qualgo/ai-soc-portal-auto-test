@@ -1,7 +1,13 @@
+import { IConfiguration } from '@cucumber/cucumber';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
+
 // Use consistent report path
 const reportsPath = process.env.REPORTS_PATH || 'test-results';
 
-module.exports = {
+const config: IConfiguration = {
   default: {
     paths: ['tests/features/**/*.feature'],
     requireModule: ['ts-node/register'],
@@ -27,3 +33,5 @@ module.exports = {
     }
   }
 };
+
+export default config;

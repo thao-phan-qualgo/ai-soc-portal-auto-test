@@ -35,4 +35,3 @@ export class ITAssetInventoryPage extends BasePage {
     return await this.isElementVisible(this.assetTable);
   }
 }
-

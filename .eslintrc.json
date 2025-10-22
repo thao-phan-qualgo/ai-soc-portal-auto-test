@@ -18,6 +18,14 @@
   "env": {
     "node": true,
     "es2022": true
-  }
+  },
+  "ignorePatterns": [
+    "*.js",
+    "*.mjs",
+    "node_modules/",
+    "dist/",
+    "test-results/",
+    "reports/"
+  ]
 }
 
