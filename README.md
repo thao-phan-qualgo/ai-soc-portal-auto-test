@@ -73,23 +73,114 @@ HEADLESS=false
 
 ```
 ai-soc-portal-auto-test/
-├── tests/
+├── src/
 │   ├── config/
-│   │   └── config.ts                 # Configuration management
+│   │   ├── env.config.ts            # Environment configuration
+│   │   └── cucumber.config.js        # Cucumber configuration
+│   │
+│   ├── database/
+│   │   ├── connection/
+│   │   │   └── db.client.ts          # Database connection management
+│   │   ├── queries/
+│   │   │   └── base.queries.ts       # Base database queries
+│   │   └── index.ts                  # Database module exports
+│   │
+│   ├── ui/
+│   │   ├── pages/
+│   │   │   ├── base/
+│   │   │   │   └── BasePage.ts       # Base page object
+│   │   │   └── inventory/
+│   │   │       └── ITAssetInventoryPage.ts
+│   │   ├── components/               # Reusable UI components
+│   │   └── locators/                 # UI locators
+│   │
+│   ├── support/
+│   │   ├── world.ts                  # Cucumber World (context)
+│   │   ├── hooks.ts                  # Before/After hooks
+│   │   ├── transformers.ts           # Parameter transformers
+│   │   └── custom-types.ts           # Custom parameter types
+│   │
+│   ├── helpers/
+│   │   ├── logger.ts                 # Logging utility
+│   │   └── wait.helper.ts            # Wait and retry helpers
+│   │
+│   └── types/
+│       ├── world.types.ts            # World type definitions
+│       └── db.types.ts               # Database type definitions
+│
+├── features/                         # Gherkin feature files
+│   ├── database/
+│   │   └── data-integrity.feature    # Database tests
+│   └── ui/
+│       ├── user-authentication.feature
+│       └── asset-inventory.feature
+│
+├── step-definitions/                 # Step implementations
+│   ├── database/
+│   │   ├── database.steps.ts         # Database operations
+│   │   └── db-schema.steps.ts        # Schema validation
+│   └── ui/
+│       ├── common.steps.ts           # Common UI steps
+│       ├── authentication.steps.ts   # Login steps
+│       └── asset-inventory.steps.ts  # Asset management steps
+│
+├── test-data/
 │   ├── fixtures/
-│   │   └── page-fixtures.ts          # Test fixtures
-│   ├── pages/
-│   │   ├── BasePage.ts               # Base page object
-│   │   └── ITAssetInventoryPage.ts   # IT Asset Inventory page
-│   ├── utils/
-│   │   └── helpers.ts                # Utility functions
-│   └── it-asset-inventory.spec.ts    # Test specifications
-├── test-results/                      # Test results and artifacts
-├── allure-results/                    # Allure report data
-├── playwright.config.ts               # Playwright configuration
-├── package.json                       # Dependencies and scripts
-└── tsconfig.json                      # TypeScript configuration
+│   │   ├── users.json                # Test user data
+│   │   └── assets.json               # Test asset data
+│   ├── schemas/                      # JSON schemas
+│   └── examples/                     # Data for Examples tables
+│
+├── scripts/
+│   └── ssh-tunnel.sh                 # SSH tunnel management
+│
+├── reports/                          # Test reports and artifacts
+│   ├── cucumber-report.html
+│   ├── screenshots/
+│   └── videos/
+│
+├── cucumber.config.js                # Cucumber CLI configuration
+├── playwright.config.ts              # Playwright configuration
+├── package.json                      # Dependencies and scripts
+└── tsconfig.json                     # TypeScript configuration
 ```
+
+---
+
+## 🏗️ Architecture & Organization
+
+### **Key Principles**
+
+This project follows a **modular, layered architecture** with clear separation of concerns:
+
+1. **`src/` - Source Code**
+   - **config/** - Configuration management
+   - **database/** - Database layer (connection, queries)
+   - **ui/** - UI automation layer (pages, components, locators)
+   - **support/** - Cucumber support files (world, hooks, transformers)
+   - **helpers/** - Utility functions (logger, wait helpers)
+   - **types/** - TypeScript type definitions
+
+2. **`features/` - Test Scenarios**
+   - Organized by test type (database, ui, api, integration)
+   - Gherkin syntax for business-readable tests
+
+3. **`step-definitions/` - Test Implementation**
+   - Organized by layer (database, ui, api, shared)
+   - Implements the Gherkin scenarios
+
+4. **`test-data/` - Test Data**
+   - **fixtures/** - Static test data (JSON)
+   - **schemas/** - Data validation schemas
+   - **examples/** - Data for Examples tables (CSV)
+
+### **Benefits of This Structure**
+
+✅ **Scalability** - Easy to add new features and tests  
+✅ **Maintainability** - Clear organization makes code easy to find and update  
+✅ **Reusability** - Shared components and helpers across tests  
+✅ **Testability** - Separated layers make unit testing easier  
+✅ **Collaboration** - Team members can work on different layers independently  
 
 ---
 
@@ -468,8 +559,8 @@ npm run test:debug
 # Generate test code
 npm run codegen
 
-# Test database connection
-npx ts-node scripts/test-db-connection.ts
+# Check database tunnel status
+npm run tunnel:status
 ```
 
 #### View Results

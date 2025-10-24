@@ -1,0 +1,43 @@
+[
+  {
+    "id": "asset-001",
+    "name": "MacBook Pro 16\"",
+    "type": "Laptop",
+    "status": "Active",
+    "serialNumber": "C02YX1AAJG5H",
+    "purchaseDate": "2023-01-15",
+    "assignedTo": "user-001",
+    "location": "Office A"
+  },
+  {
+    "id": "asset-002",
+    "name": "Dell Monitor 27\"",
+    "type": "Monitor",
+    "status": "Active",
+    "serialNumber": "CN-0P2418-74180-731-04QS",
+    "purchaseDate": "2023-02-20",
+    "assignedTo": "user-002",
+    "location": "Office B"
+  },
+  {
+    "id": "asset-003",
+    "name": "iPhone 13 Pro",
+    "type": "Mobile",
+    "status": "Maintenance",
+    "serialNumber": "FD1234567890",
+    "purchaseDate": "2022-11-10",
+    "assignedTo": "user-001",
+    "location": "Service Center"
+  },
+  {
+    "id": "asset-004",
+    "name": "ThinkPad X1 Carbon",
+    "type": "Laptop",
+    "status": "Retired",
+    "serialNumber": "PC123ABC",
+    "purchaseDate": "2020-05-05",
+    "assignedTo": null,
+    "location": "Warehouse"
+  }
+]
+

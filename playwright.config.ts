@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
-import { config } from './src/config/config';
+import { config } from './src/config/env.config';
 
 // Load environment variables
 dotenv.config();
@@ -43,7 +43,7 @@ export default defineConfig({
       name: 'chromium',
       use: { 
         ...devices['Desktop Chrome'],
-        channel: 'chrome', // Use system Chrome instead of Chromium
+        channel: 'chrome',
         viewport: { width: 1920, height: 1080 },
       },
     },

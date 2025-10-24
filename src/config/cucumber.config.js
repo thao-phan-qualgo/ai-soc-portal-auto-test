@@ -6,10 +6,10 @@ module.exports = {
     paths: ['features/**/*.feature'],
     requireModule: ['ts-node/register'],
     require: [
+      'step-definitions/**/*.steps.ts',
       'src/support/hooks.ts',
       'src/support/transformers.ts',
-      'src/support/custom-types.ts',
-      'step-definitions/**/*.ts'
+      'src/support/custom-types.ts'
     ],
     format: [
       'progress-bar',

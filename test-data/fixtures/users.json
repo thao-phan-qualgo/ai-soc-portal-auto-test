@@ -1,0 +1,30 @@
+[
+  {
+    "id": "user-001",
+    "username": "test.user@example.com",
+    "email": "test.user@example.com",
+    "firstName": "Test",
+    "lastName": "User",
+    "role": "admin",
+    "active": true
+  },
+  {
+    "id": "user-002",
+    "username": "john.doe@example.com",
+    "email": "john.doe@example.com",
+    "firstName": "John",
+    "lastName": "Doe",
+    "role": "user",
+    "active": true
+  },
+  {
+    "id": "user-003",
+    "username": "jane.smith@example.com",
+    "email": "jane.smith@example.com",
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "role": "viewer",
+    "active": false
+  }
+]
+
