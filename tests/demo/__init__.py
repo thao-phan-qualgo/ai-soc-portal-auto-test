@@ -1,0 +1,3 @@
+"""
+Demo tests package
+"""
